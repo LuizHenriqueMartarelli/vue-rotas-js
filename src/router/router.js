@@ -1,15 +1,18 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Contatos from '../views/contatos/Contatos.vue';
-import ContatosHome from '../views/contatos/ContatosHome.vue';
-import ContatoDetalhes from '../views/contatos/ContatoDetalhes.vue';
-import ContatoEditar from '../views/contatos/ContatoEditar.vue';
 import Erro404Contatos from '../views/contatos/Erro404Contatos.vue';
-import Home from '../views/Home.vue';
 import Erro404 from '../views/Erro404.vue';
 import Login from '../views/login/Login.vue';
 
 import EventBus from '../event-bus';
+const Contatos = () => import(/* webpackChunkName: "contatos" */ '../views/contatos/Contatos.vue');
+const ContatosHome = () =>
+	import(/* webpackChunkName: "contatos" */ '../views/contatos/ContatosHome.vue');
+const ContatoDetalhes = () =>
+	import(/* webpackChunkName: "contatos" */ '../views/contatos/ContatoDetalhes.vue');
+const ContatoEditar = () =>
+	import(/* webpackChunkName: "contatos" */ '../views/contatos/ContatoEditar.vue');
+const Home = () => import('../views/Home.vue');
 
 Vue.use(VueRouter);
 
@@ -17,6 +20,19 @@ const router = new VueRouter({
 	mode: 'history',
 	base: process.env.BASE_URL,
 	linkActiveClass: 'active',
+	scrollBehavior(to, from, savedPosition) {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				if (savedPosition) return resolve(savedPosition);
+				if (to.hash) {
+					return resolve({
+						selector: to.hash,
+					});
+				}
+				resolve({ x: 0, y: 0 });
+			}, 3000);
+		});
+	},
 	routes: [
 		{
 			path: '/contatos',
@@ -67,7 +83,7 @@ const router = new VueRouter({
 			path: '/',
 			redirect: to => {
 				console.log(to);
-				return { name: 'contatos' };
+				return { name: 'home' };
 			},
 		},
 		{ path: '*', component: Erro404 },
